@@ -7,6 +7,8 @@ class FSM {
         this.initialState = config.initial;
         this.activeState = config.initial;
         this.states = config.states;
+        this.history = [config.initial];
+        this.historyStage = 0;
     }
 
     /**
@@ -24,6 +26,8 @@ class FSM {
     changeState(state) {
         if(this.states[state]) {
             this.activeState = state;
+            this.history.push(state);
+            this.historyStage++;
         }      
         else throw new Error('state isn\'t exist');
     }
