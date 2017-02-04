@@ -9,6 +9,8 @@ class FSM {
         this.states = config.states;
         this.history = [config.initial];
         this.historyStage = 0;
+        this.undoIsAvailable = false;
+        this.redoIsAvailable = false;
     }
 
     /**
@@ -28,6 +30,8 @@ class FSM {
             this.activeState = state;
             this.history.push(state);
             this.historyStage++;
+            this.undoIsAvailable = true;
+            this.redoIsAvailable = false;
         }      
         else throw new Error('state isn\'t exist');
     }
@@ -80,12 +84,18 @@ class FSM {
      * @returns {Boolean}
      */
     undo() {
-        if(!this.historyStage) {
-            return false;
-        } else {
-            this.activeState = this.history[--this.historyStage];
-            return true;
+        if(this.history.length == 1) {
+            this.undoIsAvailable = false;           
+        } else if(!this.historyStage) {
+            this.undoIsAvailable = false;
+            this.redoIsAvailable = true;
         }
+        if(this.undoIsAvailable) {
+            this.activeState = this.history[--this.historyStage];
+            this.redoIsAvailable = true;
+        }
+        return this.undoIsAvailable;
+        
     }
 
     /**
@@ -106,5 +116,3 @@ class FSM {
 }
 
 module.exports = FSM;
-
-/** @Created by Uladzimir Halushka **/
